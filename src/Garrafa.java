@@ -8,11 +8,22 @@ public class Garrafa {
         this.volume = volume;
     }
 
+    public Garrafa() {
+    }
+
     public String getNome() {
         return nome;
     }
 
     public double getVolume() {
         return volume;
+    }
+
+    @Override
+    public String toString() {
+        return "Garrafa{" +
+                "nome='" + nome + '\'' +
+                ", volume=" + volume +
+                '}';
     }
 }
