@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Main {
@@ -31,68 +32,56 @@ public class Main {
         for (int i = 0; i < garrafas.size(); i++) {
             System.out.println(garrafas.get(i).getNome() + " - " + garrafas.get(i).getVolume() + "L");
         }
-        encherGalao(galao, garrafas);
+        encherGalao(garrafas);
+        resposta();
     }
 
-    private static void encherGalao(double galao, ArrayList<Garrafa> garrafas) {
-        Garrafa maior = null;
+    private static void encherGalao(ArrayList<Garrafa> garrafas) {
         double diferenca = 0;
         boolean entrou = false;
+        Garrafa g = null;
+        int index = 0;
 
-        for (int i = 0; i < garrafas.size(); i++) {
-            double aux = galao - garrafas.get(i).getVolume();
-            if (aux <= 0) {
-                maior = new Garrafa(garrafas.get(i).getNome(), garrafas.get(i).getVolume());
-                diferenca = aux;
-                garrafasUtilizadas.add(maior);
-                break;
-            } else if (aux <= galao && aux >= 0) {
+        while (volumeAtualGalao() > 0 && !garrafas.isEmpty()) {
+            for (int i = 0; i < garrafas.size(); i++) {
+                double aux;
+                aux = Math.abs(volumeAtualGalao() - garrafas.get(i).getVolume());
                 if (!entrou) {
                     diferenca = aux;
-                    maior = new Garrafa(garrafas.get(i).getNome(), garrafas.get(i).getVolume());
                     entrou = true;
-                } else {
-                    if (aux < diferenca) {
-                        diferenca = aux;
-                        maior = new Garrafa(garrafas.get(i).getNome(), garrafas.get(i).getVolume());
-                    }
+                    g = new Garrafa(garrafas.get(i).getNome(), garrafas.get(i).getVolume());
+                    index = i;
+
+                } else if (diferenca > aux) {
+                    diferenca = aux;
+                    g = new Garrafa(garrafas.get(i).getNome(), garrafas.get(i).getVolume());
+                    index = i;
                 }
-                garrafasUtilizadas.add(maior);
             }
-
+            diferenca = 0;
+            entrou = false;
+            garrafasUtilizadas.add(g);
+            garrafas.remove(index);
         }
-
-        boolean disponivel = true;
-        for (int i = 0; i < garrafas.size(); i++) {
-            if (galao - maior.getVolume() != 0 && galao - maior.getVolume() > 0) {
-                for (int j = 0; j < garrafasUtilizadas.size(); j++) {
-                    if (!garrafas.get(i).getNome().equalsIgnoreCase(garrafasUtilizadas.get(j).getNome())) {
-                        double vAtual = volumeGalao();
-                        double aux = galao - garrafas.get(i).getVolume();
-
-
-                    }
-                }
-
-
-            }
-        }
-        System.out.println("Maior: " + maior.toString());
-        System.out.println("Diferença: " + diferenca);
-        resposta();
-
-
     }
+
 
     private static void resposta() {
         String resp = "resposta:[ ";
         for (int i = 0; i < garrafasUtilizadas.size(); i++) {
-            resp = (resp + garrafasUtilizadas.get(i).getVolume() + "L ");
+            resp = (resp + garrafasUtilizadas.get(i).getVolume() + "L; ");
+        }
+        resp += "]";
+
+        if (volumeAtualGalao() < 0) {
+            resp += "; sobra " + (new DecimalFormat("#,##0.00").format(Math.abs(volumeAtualGalao())) + "L");
+        } else if (volumeAtualGalao() > 0) {
+            resp += "; falta " + new DecimalFormat("#,##0.00").format(volumeAtualGalao()) + "L";
         }
         System.out.println(resp);
     }
 
-    private static double volumeGalao() {
+    private static double volumeAtualGalao() {
         double vAtual = galao;
 
         for (int i = 0; i < garrafasUtilizadas.size(); i++) {
